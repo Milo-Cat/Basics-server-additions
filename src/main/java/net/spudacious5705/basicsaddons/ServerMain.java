@@ -4,8 +4,14 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -51,17 +57,35 @@ public class ServerMain {
     @SubscribeEvent
     public void onEntitySpawn(MobSpawnEvent.FinalizeSpawn event) {
         if (event.getEntity() instanceof Monster mob) {
-            mob.addEffect(new MobEffectInstance(
-                    MobEffects.DIG_SLOWDOWN,
-                    Integer.MAX_VALUE,
-                    0,
-                    false, // Ambient
-                    false // Show particles
 
-            ));
+            modifyAttribute(mob,Attributes.MOVEMENT_SPEED,0.5D,"distance_speed_multiplier");
 
         }
     }
+
+    private void modifyAttribute(
+            Monster mob,
+            Attribute attributeType,
+            double multiplier,
+            String uniqueID
+    ){
+        uniqueID = "basics_additions:"+uniqueID;
+        AttributeInstance attribute = mob.getAttribute(attributeType);
+
+        if(attribute != null){
+
+            AttributeModifier modifier = new AttributeModifier(
+                    uniqueID,
+                    multiplier,
+                    AttributeModifier.Operation.MULTIPLY_BASE
+            );
+
+            if (!attribute.hasModifier(modifier)) {
+                attribute.addPermanentModifier(modifier);
+            }
+        }
+    }
+
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
