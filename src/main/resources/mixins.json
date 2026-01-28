@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "net.spudacious5705.basicsaddons.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mixins.refmap.json",
+  "mixins": [
+    "ElytraFirework",
+    "FallDmg",
+    "VillagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
